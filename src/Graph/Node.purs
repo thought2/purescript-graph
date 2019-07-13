@@ -47,6 +47,12 @@ derive instance functorNode ::
 derive instance genericNode ::
   Generic (Node id n) _
 
+derive instance eqNode ::
+  ( Eq id
+  , Eq n
+  ) =>
+  Eq (Node id n)
+
 instance showNode ::
   ( Show id
   , Show n

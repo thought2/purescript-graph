@@ -12,6 +12,7 @@ You can edit this file as you like.
     , "ordered-collections"
     , "generics-rep"
     , "arrays"
+    , "test-unit"
     ]
 , packages =
     ./packages.dhall

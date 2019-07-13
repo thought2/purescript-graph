@@ -1,19 +1,20 @@
 module Graph.Internal where
 
 import Prelude
+
 import Data.Either (Either(..), note)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.HashMap (HashMap)
+import Data.HashMap as HashMap
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Newtype (class Newtype, unwrap, wrap, over)
 import Graph.Class (class Id)
 import Graph.Edge (Edge, EdgeConfig, EdgeId)
-import Graph.Node (Node, NodeConfig)
-import Partial.Unsafe (unsafePartial)
-import Data.HashMap as HashMap
 import Graph.Edge as Edge
+import Graph.Node (Node, NodeConfig)
 import Graph.Node as Node
+import Partial.Unsafe (unsafePartial)
 
 
 -- Graph properties: Directed, cyclic, simple (no loop, no multiple edges)  
@@ -134,8 +135,15 @@ getNodes ::
   forall id n e.
   Id id =>
   Graph id n e ->
-  HashMap id (Node id n)
-getNodes = unwrap >>> _.nodes
+  Array (Node id n)
+getNodes = unwrap >>> _.nodes >>> HashMap.values
+
+getEdges ::
+  forall id n e.
+  Id id =>
+  Graph id n e ->
+  Array (Edge id e)
+getEdges = unwrap >>> _.edges >>> HashMap.values
 
 unsafeGetNode ::
   forall id n e.

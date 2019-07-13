@@ -51,6 +51,12 @@ instance showEdge ::
   Show (Edge id e) where
     show = genericShow
 
+derive instance eqEdge ::
+  ( Eq id
+  , Eq e
+  ) =>
+  Eq (Edge id e)
+
 -- CREATE
 create ::
   forall id e.
