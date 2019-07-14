@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.State (execState, modify)
 import Data.Either (Either(..), note)
+import Data.Foldable (foldM)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.HashMap (HashMap)
@@ -99,9 +100,7 @@ insertEdges ::
   Graph id n e ->
   Either (Error id n e) (Graph id n e)
 insertEdges edgeConfigs graph =
-  execState st (Right graph)
-  where
-    st = traverse (\ec -> modify (_ >>= insertEdge ec)) edgeConfigs
+  foldM (\st x -> insertEdge x st) graph edgeConfigs
 
 unsafeInsertEdge ::
   forall id n e.
