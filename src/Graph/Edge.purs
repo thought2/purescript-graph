@@ -4,12 +4,14 @@ module Graph.Edge
   , EdgeData
   , EdgeId
   , create
+  , getId
+  , getLabel
   ) where
 
 import Prelude
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
-import Data.Newtype (class Newtype, wrap)
+import Data.Newtype (class Newtype, wrap, unwrap)
 import Graph.Class (class Id)
 
 -- TYPES
@@ -68,3 +70,17 @@ create { label, predNodeId, succNodeId } = wrap { label
                                                       , succNodeId
                                                       }
                                                 }
+
+getId ::
+  forall id e.
+  Id id =>
+  Edge id e ->
+  EdgeId id
+getId = unwrap >>> _.id
+
+getLabel ::
+  forall id e.
+  Id id =>
+  Edge id e ->
+  e
+getLabel = unwrap >>> _.label

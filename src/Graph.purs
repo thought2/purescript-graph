@@ -6,6 +6,7 @@ module Graph
 
 import Graph.Internal
   ( Graph
+  , Error(..)
   , getEdge
   , getNode
   , empty
@@ -13,6 +14,7 @@ import Graph.Internal
   , getEdges
   , insertNode
   , insertEdge
+  , insertEdges
   )
 
 import Graph.Node

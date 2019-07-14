@@ -2,6 +2,7 @@ module Graph.Internal where
 
 import Prelude
 
+import Control.Monad.State (execState, modify)
 import Data.Either (Either(..), note)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
@@ -9,6 +10,8 @@ import Data.HashMap (HashMap)
 import Data.HashMap as HashMap
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Newtype (class Newtype, unwrap, wrap, over)
+import Data.Show (class Show)
+import Data.Traversable (traverse)
 import Graph.Class (class Id)
 import Graph.Edge (Edge, EdgeConfig, EdgeId)
 import Graph.Edge as Edge
@@ -33,6 +36,13 @@ data Error id n e
   = ErrLoop id
   | ErrNodeNotFound id
   | ErrCycle (Array (Node id n))
+
+derive instance eqError :: (Eq id, Eq n, Eq e) => Eq (Error id n e)
+
+derive instance genericError :: Generic (Error id n e) _
+
+instance showError :: (Show id, Show n, Show e) => Show (Error id n e) where
+  show = genericShow
 
 derive instance genericGraph ::
   Generic (Graph id n e) _
@@ -81,6 +91,17 @@ insertEdge edgeConfig@{ predNodeId, succNodeId } graph = ado
   _ <- getNode predNodeId graph # note (ErrNodeNotFound predNodeId)
   _ <- getNode succNodeId graph # note (ErrNodeNotFound succNodeId)
   in graph # unsafeInsertEdge edgeConfig # unsafeRegisterEdge edgeConfig
+
+insertEdges ::
+  forall id n e.
+  Id id =>
+  Array (EdgeConfig id e) ->
+  Graph id n e ->
+  Either (Error id n e) (Graph id n e)
+insertEdges edgeConfigs graph =
+  execState st (Right graph)
+  where
+    st = traverse (\ec -> modify (_ >>= insertEdge ec)) edgeConfigs
 
 unsafeInsertEdge ::
   forall id n e.
